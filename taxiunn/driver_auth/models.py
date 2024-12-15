@@ -6,16 +6,16 @@ from django.contrib.auth.backends import BaseBackend
 class DriverManager(BaseUserManager):
     """Менеджер для пользователя класса Driver."""
 
-    def create_user(self, full_name: str, email: str, password: str):
+    def create_user(self, email: str, password: str, full_name: str):
         """Создание обычного пользователя."""
-        if full_name is None or full_name == "":
-            raise TypeError('Driver must have a name!')
-
         if email is None:
             raise TypeError('Driver must have an email!')
 
         if password is None:
             raise TypeError('Driver must have a password!')
+
+        if full_name is None or full_name == "":
+            raise TypeError('Driver must have a name!')
 
         user = self.model(
             full_name=full_name,
@@ -26,9 +26,9 @@ class DriverManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, full_name: str, email: str, password: str):
+    def create_superuser(self, email: str, password: str, full_name: str):
         """Создание суперпользователя."""
-        user = self.create_user(full_name, email, password)
+        user = self.create_user(email, password, full_name)
         user.make_superuser()
         user.save()
 

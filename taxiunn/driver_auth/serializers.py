@@ -66,3 +66,52 @@ class DriverLoginSerializer(serializers.ModelSerializer):
                 "An account with this email does not exist!",
             )
         return value
+
+
+class PasswordRecoverySerializer(serializers.ModelSerializer):
+    """Сериалайзер восстановления пароля для водителя."""
+
+    email = serializers.EmailField(write_only=True)
+
+    class Meta:
+        model = Driver
+        fields = ['email']
+
+    def validate_email(self, value: str) -> Optional[str]:
+        """Валидация email (что пользователь с таким email существует)."""
+        if not Driver.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "An account with this email does not exist!",
+            )
+        return value
+
+
+class DriverPasswordRecoveryVerifySerializer(PasswordRecoverySerializer):
+    """Сериалайзер верификации восстановления пароля для водителя."""
+
+    verification_code = serializers.CharField(write_only=True)
+
+    class Meta(PasswordRecoverySerializer.Meta):
+        fields = PasswordRecoverySerializer.Meta.fields + ['verification_code']
+
+
+class DriverPasswordRecoveryChangeSerializer(PasswordRecoverySerializer):
+    """Сериалайзер изменения пароля водителя."""
+
+    password = serializers.CharField(write_only=True)
+
+    class Meta(PasswordRecoverySerializer.Meta):
+        fields = PasswordRecoverySerializer.Meta.fields + ['password']
+
+    def save(self) -> Driver:
+        """Метод сохранения нового пароля."""
+        user = Driver.objects.get(
+            email=self.validated_data.get('email'),
+        )
+
+        user.set_password(
+            self.validated_data['password'],
+        )
+
+        user.save()
+        return user

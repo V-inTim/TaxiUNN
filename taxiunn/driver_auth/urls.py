@@ -5,6 +5,9 @@ from .views import (
     VerificationOfRegistrationView,
     LoginView,
     RefreshView,
+    DriverPasswordRecoveryView,
+    DriverPasswordRecoveryVerifyView,
+    DriverPasswordRecoveryChangeView,
 )
 
 urlpatterns = [
@@ -27,5 +30,20 @@ urlpatterns = [
         'refresh',
         RefreshView.as_view(),
         name='refresh_driver',
+    ),
+    path(
+        'password-recovery',
+        DriverPasswordRecoveryView.as_view(),
+        name='recovery_driver',
+    ),
+    path(
+        'password-recovery/verify',
+        DriverPasswordRecoveryVerifyView.as_view(),
+        name='recovery_verify_driver',
+    ),
+    path(
+        'password-recovery/change',
+        DriverPasswordRecoveryChangeView.as_view(),
+        name='recovery_change_driver',
     ),
 ]
